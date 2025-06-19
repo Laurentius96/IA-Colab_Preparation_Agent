@@ -59,3 +59,41 @@ def parse_synapse_output(text):
         
     print(f"Foram encontradas e preparadas {len(cells)} células.")
     return cells    
+
+def create_notebook_structure(cells_data):
+    """Cria a estrutura JSON de um notebook .ipynb a partir dos dados das células."""
+    notebook_cells = []
+    for cell_item in cells_data:
+        if cell_item['type'] == 'code':
+            notebook_cells.append({
+                "cell_type": "code",
+                "execution_count": None,
+                "metadata": {},
+                "outputs": [],
+                "source": [line + '\n' for line in cell_item['content'].split('\n')]
+            })
+        elif cell_item['type'] == 'markdown':
+            notebook_cells.append({
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [line + '\n' for line in cell_item['content'].split('\n')]
+            })
+            
+    notebook_json = {
+        "nbformat": 4,
+        "nbformat_minor": 0,
+        "metadata": {
+            "colab": {
+                "provenance": []
+            },
+            "kernelspec": {
+                "name": "python3",
+                "display_name": "Python 3"
+            },
+            "language_info": {
+                "name": "python"
+            }
+        },
+        "cells": notebook_cells
+    }
+    return json.dumps(notebook_json, indent=2)
