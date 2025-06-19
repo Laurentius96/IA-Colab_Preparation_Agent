@@ -2,6 +2,7 @@ import os
 import re
 import json
 import sys
+import time
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -59,53 +60,106 @@ def authenticate():
         print(f"❌ Erro ao construir o serviço da API: {error}")
         return None
 
+# =========================================================================
+# 🧠 CÉREBRO DEFINITIVO - PARSER INTELIGENTE COM REGEX
+# =========================================================================
 def parse_synapse_output(text):
-    """Analisa a saída do Professor Synapse e extrai células de código e markdown."""
-    print("📝 Analisando conteúdo do Professor Synapse...")
+    """
+    Analisa a saída completa e estruturada do Professor Synapse,
+    convertendo-a em uma lista de células prontas para o Google Colab.
+    """
+    print("📝 Analisando a estrutura completa e complexa da aula...")
+    print("🎯 Usando parser inteligente com regex avançado...")
+
+    # ETAPA 1: Pré-filtragem - Remove a seção "Mergulhos Adicionais"
+    original_length = len(text)
+    if "🌊 Mergulhos Adicionais Opcionais" in text:
+        text = text.split("🌊 Mergulhos Adicionais Opcionais")[0]
+        print("✅ Seção 'Mergulhos Adicionais' removida com sucesso.")
+        print(f"   📊 Texto reduzido de {original_length} para {len(text)} caracteres")
+    else:
+        print("ℹ️  Seção 'Mergulhos Adicionais' não encontrada (normal se não existir)")
+
+    # ETAPA 2: Regex para encontrar todos os tipos de blocos que nos interessam.
+    # Esta regex "caça" blocos de markdown ou pares de código/texto.
+    # Padrão 1: Bloco de Markdown geral (```markdown)
+    # Padrão 2: Bloco de Código (▶️ ... ```python)
+    # Padrão 3: Bloco de Texto de Leitura (📖 ... ```markdown)
     
-    # Encontra todos os blocos de código Python
-    code_blocks = re.findall(r"▶️.*?```python\n(.*?)\n```", text, re.DOTALL)
-    # Encontra todos os blocos de markdown explicativos
-    markdown_blocks = re.findall(r"📖.*?```markdown\n(.*?)\n```", text, re.DOTALL)
+    print("🔍 Iniciando busca por padrões com regex...")
     
-    print(f"🔍 Encontrados {len(code_blocks)} blocos de código")
-    print(f"🔍 Encontrados {len(markdown_blocks)} blocos de markdown")
+    pattern = re.compile(
+        r"(```markdown\n(.*?)\n```)|(▶️.*?```python\n(.*?)\n```)|(📖.*?```markdown\n(.*?)\n```)", 
+        re.DOTALL
+    )
     
-    # Se não encontrou nada, tenta padrões alternativos
-    if len(code_blocks) == 0:
-        print("⚠️  Tentando padrões alternativos para código...")
-        # Tenta sem emoji
-        code_blocks = re.findall(r"```python\n(.*?)\n```", text, re.DOTALL)
-        print(f"🔍 Encontrados {len(code_blocks)} blocos de código (padrão alternativo)")
+    matches = list(pattern.finditer(text))
+    print(f"🎯 Encontrados {len(matches)} blocos válidos para processamento")
     
-    if len(markdown_blocks) == 0:
-        print("⚠️  Tentando padrões alternativos para markdown...")
-        # Tenta sem emoji
-        markdown_blocks = re.findall(r"```markdown\n(.*?)\n```", text, re.DOTALL)
-        print(f"🔍 Encontrados {len(markdown_blocks)} blocos de markdown (padrão alternativo)")
-    
-    # Intercala as células, começando pelo código
     cells = []
-    num_pairs = min(len(code_blocks), len(markdown_blocks))
+    code_blocks_found = 0
+    markdown_blocks_found = 0
+    reading_blocks_found = 0
     
-    for i in range(num_pairs):
-        cells.append({'type': 'code', 'content': code_blocks[i]})
-        # Adiciona uma célula de código em branco para prática
-        cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
-        cells.append({'type': 'markdown', 'content': markdown_blocks[i]})
-    
-    # Se sobrou código sem markdown correspondente
-    if len(code_blocks) > len(markdown_blocks):
-        for i in range(len(markdown_blocks), len(code_blocks)):
-            cells.append({'type': 'code', 'content': code_blocks[i]})
-            cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
-    
-    # Se sobrou markdown sem código correspondente
-    if len(markdown_blocks) > len(code_blocks):
-        for i in range(len(code_blocks), len(markdown_blocks)):
-            cells.append({'type': 'markdown', 'content': markdown_blocks[i]})
+    for i, match in enumerate(matches):
+        print(f"📄 Processando bloco {i+1}/{len(matches)}...")
         
-    print(f"✅ Foram preparadas {len(cells)} células no total.")
+        # O resultado do match nos diz qual grupo foi encontrado
+        # match.group(2) -> Bloco de Markdown geral
+        # match.group(4) -> Bloco de Código Python
+        # match.group(6) -> Bloco de Texto de Leitura
+        
+        if match.group(2):
+            # Bloco de Markdown geral (teoria, títulos, etc.)
+            content = match.group(2).replace('<br>', '').strip()
+            cells.append({'type': 'markdown', 'content': content})
+            markdown_blocks_found += 1
+            print(f"   📖 Markdown adicionado: {len(content)} caracteres")
+        
+        elif match.group(4):
+            # Bloco de Código Python
+            content = match.group(4).strip()
+            # Adiciona a célula de código
+            cells.append({'type': 'code', 'content': content})
+            # >>> AQUI ESTÁ A SUA FUNCIONALIDADE ESPECIAL <<<
+            # Adiciona a célula de código em branco para prática
+            cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
+            code_blocks_found += 1
+            print(f"   ⚡ Código adicionado: {len(content)} caracteres")
+            print(f"   🎯 Célula de prática adicionada!")
+            
+        elif match.group(6):
+            # Bloco de Texto de Leitura
+            content = match.group(6).strip()
+            cells.append({'type': 'markdown', 'content': content})
+            reading_blocks_found += 1
+            print(f"   📚 Texto de leitura adicionado: {len(content)} caracteres")
+
+    # ETAPA 3: Verificação e estatísticas finais
+    if not cells:
+        print("❌ ERRO: Nenhum bloco válido foi encontrado!")
+        print("🔧 Possíveis causas:")
+        print("   1. A estrutura do prompt pode ter mudado")
+        print("   2. O texto não contém os padrões esperados (```markdown, ▶️, 📖)")
+        print("   3. Formatação incorreta dos blocos de código")
+        print("\n🔍 Mostrando uma amostra do texto para diagnóstico:")
+        print("-" * 50)
+        sample = text[:1000] + "..." if len(text) > 1000 else text
+        print(sample)
+        print("-" * 50)
+        return []
+    else:
+        print("\n" + "=" * 60)
+        print("✅ ANÁLISE CONCLUÍDA COM SUCESSO!")
+        print("=" * 60)
+        print(f"📊 ESTATÍSTICAS DETALHADAS:")
+        print(f"   🔢 Total de células criadas: {len(cells)}")
+        print(f"   📖 Blocos de markdown (teoria): {markdown_blocks_found}")
+        print(f"   📚 Blocos de leitura: {reading_blocks_found}")
+        print(f"   ⚡ Blocos de código: {code_blocks_found}")
+        print(f"   🎯 Células de prática: {code_blocks_found}")
+        print("=" * 60)
+        
     return cells
 
 def create_notebook_structure(cells_data):
@@ -153,10 +207,12 @@ def create_notebook_structure(cells_data):
 def main():
     """Função principal que orquestra todo o processo."""
     print("🚀 INICIANDO AGENTE DE PREPARAÇÃO DO COLAB")
-    print("=" * 60)
-    print("📅 Versão: 2.0 - Com Debug Completo")
-    print("👤 Desenvolvido para: Preparação de Aulas do Professor Synapse")
-    print("=" * 60)
+    print("=" * 70)
+    print("📅 Versão: DEFINITIVA - Parser Inteligente")
+    print("🧠 Cérebro: Regex Avançado para Estruturas Complexas")
+    print("🎯 Especialidade: Modo Aula do Professor Synapse")
+    print("👤 Desenvolvido para: Transformar Aulas em Notebooks Interativos")
+    print("=" * 70)
     
     # Verificar arquivos necessários
     if not check_requirements():
@@ -171,11 +227,11 @@ def main():
         input("Pressione Enter para sair...")
         return
 
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 70)
     
     # 1. Obter o ID do notebook do Google Colab
     print("📎 PASSO 1: IDENTIFICAR O NOTEBOOK")
-    print("-" * 30)
+    print("-" * 35)
     notebook_link = input("Cole o link completo do seu Google Colab Notebook: ")
     
     # Verifica qual formato de URL foi usado e extrai o ID corretamente
@@ -221,14 +277,20 @@ def main():
     print(f"✅ ID do Notebook identificado: {notebook_id}")
         
     # 2. Obter a saída do Professor Synapse
-    print("\n" + "=" * 60)
-    print("📚 PASSO 2: COLAR CONTEÚDO DO PROFESSOR SYNAPSE")
-    print("-" * 30)
-    print("📝 Cole todo o conteúdo da aula do Professor Synapse abaixo.")
+    print("\n" + "=" * 70)
+    print("📚 PASSO 2: COLAR AULA COMPLETA DO PROFESSOR SYNAPSE")
+    print("-" * 35)
+    print("📝 Cole TODA a aula do Professor Synapse (Modo Aula) abaixo.")
+    print("   🧠 PARSER INTELIGENTE: Detecta automaticamente:")
+    print("   📖 Teoria e explicações (markdown)")
+    print("   ⚡ Códigos executáveis (python)")
+    print("   📚 Textos de leitura")
+    print("   🎯 Adiciona células de prática após cada código!")
+    print("   🚫 Remove automaticamente 'Mergulhos Adicionais'")
     print("   Dica: Ctrl+V para colar, depois pressione:")
     print("   • Windows: Ctrl+Z e Enter")
     print("   • Linux/Mac: Ctrl+D")
-    print("-" * 60)
+    print("-" * 70)
     
     synapse_output = ""
     line_count = 0
@@ -251,20 +313,14 @@ def main():
         return
         
     # 3. Parsear o conteúdo e criar a estrutura do notebook
-    print("\n" + "=" * 60)
-    print("⚙️  PASSO 3: PROCESSANDO CONTEÚDO")
-    print("-" * 30)
+    print("\n" + "=" * 70)
+    print("⚙️  PASSO 3: PROCESSANDO COM PARSER INTELIGENTE")
+    print("-" * 35)
     
     parsed_cells = parse_synapse_output(synapse_output)
     if not parsed_cells:
-        print("❌ Não foi possível encontrar blocos de código/markdown no formato esperado.")
-        print("   Verifique se o conteúdo contém os marcadores corretos:")
-        print("   • ▶️ seguido de ```python")
-        print("   • 📖 seguido de ```markdown")
-        print("\n🔍 Mostrando uma amostra do conteúdo colado:")
-        print("-" * 40)
-        print(synapse_output[:500] + "..." if len(synapse_output) > 500 else synapse_output)
-        print("-" * 40)
+        print("❌ Não foi possível processar o conteúdo.")
+        print("   O parser inteligente não encontrou padrões válidos.")
         input("Pressione Enter para sair...")
         return
         
@@ -284,19 +340,20 @@ def main():
         return
         
     # 5. Fazer o upload e substituir o arquivo no Google Drive
-    print("\n" + "=" * 60)
+    print("\n" + "=" * 70)
     print("🚨 PASSO 4: CONFIRMAÇÃO FINAL")
-    print("-" * 30)
+    print("-" * 35)
     print("⚠️  ATENÇÃO: Esta operação irá SUBSTITUIR completamente o conteúdo atual do notebook!")
     print(f"📋 Notebook ID: {notebook_id}")
     print(f"📊 Células a serem criadas: {len(parsed_cells)}")
-    print("-" * 60)
+    print("🎯 RESULTADO: Notebook interativo com teoria + prática!")
+    print("-" * 70)
     
     confirm = input("Você tem ABSOLUTA CERTEZA que deseja continuar? (digite 'SIM' em maiúsculas): ")
     
     if confirm == 'SIM':
         try:
-            print("\n📤 Enviando para o Google Drive...")
+            print("\n📤 Enviando aula completa para o Google Drive...")
             print("⏳ Aguarde, isso pode levar alguns segundos...")
             
             media = MediaFileUpload(temp_filename, mimetype='application/vnd.google-colaboratory')
@@ -306,11 +363,14 @@ def main():
             ).execute()
             
             print("\n🎉 SUCESSO TOTAL!")
-            print("=" * 60)
-            print("✅ O seu notebook no Google Colab foi atualizado com a aula!")
+            print("=" * 70)
+            print("✅ Seu notebook no Google Colab foi atualizado com PARSER INTELIGENTE!")
+            print("🧠 Estrutura complexa processada com sucesso!")
+            print("📚 Contém: Teoria + Códigos + Células de Prática")
+            print("🚫 Mergulhos Adicionais removidos automaticamente")
             print("💡 IMPORTANTE: Recarregue a página do Colab para ver as mudanças.")
             print(f"🔗 Link direto: https://colab.research.google.com/drive/{notebook_id}")
-            print("=" * 60)
+            print("=" * 70)
             
         except HttpError as error:
             print(f"\n❌ ERRO ao atualizar o arquivo: {error}")
@@ -322,7 +382,6 @@ def main():
         finally:
             # Limpeza do arquivo temporário
             try:
-                import time
                 time.sleep(0.5)
                 os.remove(temp_filename)
                 print(f"🧹 Arquivo temporário '{temp_filename}' removido.")
@@ -337,9 +396,9 @@ def main():
         except (PermissionError, FileNotFoundError):
             pass
     
-    print("\n" + "=" * 60)
-    print("🏁 AGENTE DE PREPARAÇÃO DO COLAB FINALIZADO")
-    print("=" * 60)
+    print("\n" + "=" * 70)
+    print("🏁 AGENTE DE PREPARAÇÃO DO COLAB - VERSÃO DEFINITIVA")
+    print("=" * 70)
     input("Pressione Enter para sair...")
 
 # ESTA É A PARTE MAIS IMPORTANTE - A CHAMADA DA FUNÇÃO MAIN
