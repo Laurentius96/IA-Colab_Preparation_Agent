@@ -39,3 +39,23 @@ def authenticate():
     except HttpError as error:
         print(f"Ocorreu um erro ao construir o serviço da API: {error}")
         return None
+    
+def parse_synapse_output(text):
+    """Analisa a saída do Professor Synapse e extrai células de código e markdown."""
+    # Encontra todos os blocos de código Python
+    code_blocks = re.findall(r"▶️.*?```python\n(.*?)\n```", text, re.DOTALL)
+    # Encontra todos os blocos de markdown explicativos
+    markdown_blocks = re.findall(r"📖.*?```markdown\n(.*?)\n```", text, re.DOTALL)
+    
+    # Intercala as células, começando pelo código
+    cells = []
+    num_pairs = min(len(code_blocks), len(markdown_blocks))
+    for i in range(num_pairs):
+        cells.append({'type': 'code', 'content': code_blocks[i]})
+        # >>> AQUI ESTÁ A SUA FUNCIONALIDADE ESPECIAL <<<
+        # Adiciona uma célula de código em branco para prática
+        cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
+        cells.append({'type': 'markdown', 'content': markdown_blocks[i]})
+        
+    print(f"Foram encontradas e preparadas {len(cells)} células.")
+    return cells    
