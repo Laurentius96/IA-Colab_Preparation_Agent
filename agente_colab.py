@@ -169,6 +169,8 @@ def main():
   with open(temp_filename, 'w', encoding='utf-8') as f:
       f.write(new_notebook_content)
       
+  # Substitua a seção final do seu código (linhas 180-190) por:
+
   # 5. Fazer o upload e substituir o arquivo no Google Drive
   print("\n---")
   confirm = input(f"Você tem CERTEZA que deseja substituir o conteúdo do notebook com ID '{notebook_id}'? (s/n): ")
@@ -184,10 +186,16 @@ def main():
       except HttpError as error:
           print(f"Ocorreu um erro ao atualizar o arquivo: {error}")
       finally:
-          os.remove(temp_filename) # Limpa o arquivo temporário
+          # Limpeza mais robusta do arquivo temporário
+          try:
+              import time
+              time.sleep(0.5)  # Aguarda um pouco
+              os.remove(temp_filename)
+          except (PermissionError, FileNotFoundError):
+              print(f"Nota: O arquivo temporário '{temp_filename}' será removido automaticamente pelo sistema.")
   else:
       print("Operação cancelada pelo usuário.")
-      os.remove(temp_filename)
-
-if __name__ == '__main__':
-  main()
+      try:
+          os.remove(temp_filename)
+      except (PermissionError, FileNotFoundError):
+          print(f"Nota: O arquivo temporário '{temp_filename}' será removido automaticamente pelo sistema.")
