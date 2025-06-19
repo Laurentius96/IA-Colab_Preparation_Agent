@@ -106,9 +106,18 @@ def main():
 
     # 1. Obter o ID do notebook do Google Colab
     notebook_link = input("Cole o link completo do seu Google Colab Notebook: ")
-    notebook_id = notebook_link.split('/d/')[1].split('/')[0]
-    print(f"ID do Notebook identificado: {notebook_id}")
+    
+    # Verifica qual formato de URL foi usado e extrai o ID corretamente
+    if '/d/' in notebook_link:
+        notebook_id = notebook_link.split('/d/')[1].split('/')[0]
+    elif '/drive/' in notebook_link:
+        notebook_id = notebook_link.split('/drive/')[1].split('/')[0]
+    else:
+        print("Erro: Formato de URL do Google Colab não reconhecido.")
+    return # Encerra o script se não encontrar o ID
 
+    print(f"ID do Notebook identificado: {notebook_id}")
+        
     # 2. Obter a saída do Professor Synapse
     print("\n---")
     print("Agora, cole a aula completa do Professor Synapse. Pressione Ctrl+D (Linux/Mac) ou Ctrl+Z e Enter (Windows) quando terminar:")
