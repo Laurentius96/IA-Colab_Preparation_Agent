@@ -39,7 +39,7 @@ def authenticate():
     except HttpError as error:
         print(f"Ocorreu um erro ao construir o serviço da API: {error}")
         return None
-    
+
 def parse_synapse_output(text):
     """Analisa a saída do Professor Synapse e extrai células de código e markdown."""
     # Encontra todos os blocos de código Python
@@ -58,7 +58,7 @@ def parse_synapse_output(text):
         cells.append({'type': 'markdown', 'content': markdown_blocks[i]})
         
     print(f"Foram encontradas e preparadas {len(cells)} células.")
-    return cells    
+    return cells
 
 def create_notebook_structure(cells_data):
     """Cria a estrutura JSON de um notebook .ipynb a partir dos dados das células."""
@@ -97,3 +97,65 @@ def create_notebook_structure(cells_data):
         "cells": notebook_cells
     }
     return json.dumps(notebook_json, indent=2)
+
+def main():
+    """Função principal que orquestra todo o processo."""
+    service = authenticate()
+    if not service:
+        return
+
+    # 1. Obter o ID do notebook do Google Colab
+    notebook_link = input("Cole o link completo do seu Google Colab Notebook: ")
+    notebook_id = notebook_link.split('/d/')[1].split('/')[0]
+    print(f"ID do Notebook identificado: {notebook_id}")
+
+    # 2. Obter a saída do Professor Synapse
+    print("\n---")
+    print("Agora, cole a aula completa do Professor Synapse. Pressione Ctrl+D (Linux/Mac) ou Ctrl+Z e Enter (Windows) quando terminar:")
+    synapse_output = ""
+    while True:
+        try:
+            line = input()
+            synapse_output += line + '\n'
+        except EOFError:
+            break
+            
+    if not synapse_output.strip():
+        print("Nenhum conteúdo foi colado. Abortando.")
+        return
+        
+    # 3. Parsear o conteúdo e criar a estrutura do notebook
+    parsed_cells = parse_synapse_output(synapse_output)
+    if not parsed_cells:
+        print("Não foi possível encontrar blocos de código/markdown no formato esperado.")
+        return
+        
+    new_notebook_content = create_notebook_structure(parsed_cells)
+    
+    # 4. Salvar o conteúdo em um arquivo temporário
+    temp_filename = 'temp_notebook.ipynb'
+    with open(temp_filename, 'w', encoding='utf-8') as f:
+        f.write(new_notebook_content)
+        
+    # 5. Fazer o upload e substituir o arquivo no Google Drive
+    print("\n---")
+    confirm = input(f"Você tem CERTEZA que deseja substituir o conteúdo do notebook com ID '{notebook_id}'? (s/n): ")
+    if confirm.lower() == 's':
+        try:
+            media = MediaFileUpload(temp_filename, mimetype='application/vnd.google-colaboratory')
+            service.files().update(
+                fileId=notebook_id,
+                media_body=media
+            ).execute()
+            print("\n✅ Sucesso! O seu notebook no Google Colab foi atualizado com a aula.")
+            print("Pode ser necessário recarregar a página do Colab para ver as mudanças.")
+        except HttpError as error:
+            print(f"Ocorreu um erro ao atualizar o arquivo: {error}")
+        finally:
+            os.remove(temp_filename) # Limpa o arquivo temporário
+    else:
+        print("Operação cancelada pelo usuário.")
+        os.remove(temp_filename)
+
+if __name__ == '__main__':
+    main()
