@@ -13,90 +13,90 @@ SCOPES = ['https://www.googleapis.com/auth/drive']
 CLIENT_SECRETS_FILE = 'client_secrets.json'
 
 def authenticate():
-    """Lida com a autenticação do usuário e retorna o serviço da API."""
-    creds = None
-    # O arquivo token.json armazena os tokens de acesso e atualização do usuário.
-    # Ele é criado automaticamente na primeira vez que você roda o script.
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    
-    # Se não houver credenciais válidas, permite que o usuário faça login.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-            creds = flow.run_local_server(port=0)
-        
-        # Salva as credenciais para a próxima execução
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-            
-    try:
-        service = build('drive', 'v3', credentials=creds)
-        print("Autenticação com Google Drive bem-sucedida.")
-        return service
-    except HttpError as error:
-        print(f"Ocorreu um erro ao construir o serviço da API: {error}")
-        return None
+  """Lida com a autenticação do usuário e retorna o serviço da API."""
+  creds = None
+  # O arquivo token.json armazena os tokens de acesso e atualização do usuário.
+  # Ele é criado automaticamente na primeira vez que você roda o script.
+  if os.path.exists('token.json'):
+      creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+  
+  # Se não houver credenciais válidas, permite que o usuário faça login.
+  if not creds or not creds.valid:
+      if creds and creds.expired and creds.refresh_token:
+          creds.refresh(Request())
+      else:
+          flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+          creds = flow.run_local_server(port=0)
+      
+      # Salva as credenciais para a próxima execução
+      with open('token.json', 'w') as token:
+          token.write(creds.to_json())
+          
+  try:
+      service = build('drive', 'v3', credentials=creds)
+      print("Autenticação com Google Drive bem-sucedida.")
+      return service
+  except HttpError as error:
+      print(f"Ocorreu um erro ao construir o serviço da API: {error}")
+      return None
 
 def parse_synapse_output(text):
-    """Analisa a saída do Professor Synapse e extrai células de código e markdown."""
-    # Encontra todos os blocos de código Python
-    code_blocks = re.findall(r"▶️.*?```python\n(.*?)\n```", text, re.DOTALL)
-    # Encontra todos os blocos de markdown explicativos
-    markdown_blocks = re.findall(r"📖.*?```markdown\n(.*?)\n```", text, re.DOTALL)
-    
-    # Intercala as células, começando pelo código
-    cells = []
-    num_pairs = min(len(code_blocks), len(markdown_blocks))
-    for i in range(num_pairs):
-        cells.append({'type': 'code', 'content': code_blocks[i]})
-        # >>> AQUI ESTÁ A SUA FUNCIONALIDADE ESPECIAL <<<
-        # Adiciona uma célula de código em branco para prática
-        cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
-        cells.append({'type': 'markdown', 'content': markdown_blocks[i]})
-        
-    print(f"Foram encontradas e preparadas {len(cells)} células.")
-    return cells
+  """Analisa a saída do Professor Synapse e extrai células de código e markdown."""
+  # Encontra todos os blocos de código Python
+  code_blocks = re.findall(r"▶️.*?```python\n(.*?)\n```", text, re.DOTALL)
+  # Encontra todos os blocos de markdown explicativos
+  markdown_blocks = re.findall(r"📖.*?```markdown\n(.*?)\n```", text, re.DOTALL)
+  
+  # Intercala as células, começando pelo código
+  cells = []
+  num_pairs = min(len(code_blocks), len(markdown_blocks))
+  for i in range(num_pairs):
+      cells.append({'type': 'code', 'content': code_blocks[i]})
+      # >>> AQUI ESTÁ A SUA FUNCIONALIDADE ESPECIAL <<<
+      # Adiciona uma célula de código em branco para prática
+      cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
+      cells.append({'type': 'markdown', 'content': markdown_blocks[i]})
+      
+  print(f"Foram encontradas e preparadas {len(cells)} células.")
+  return cells
 
 def create_notebook_structure(cells_data):
-    """Cria a estrutura JSON de um notebook .ipynb a partir dos dados das células."""
-    notebook_cells = []
-    for cell_item in cells_data:
-        if cell_item['type'] == 'code':
-            notebook_cells.append({
-                "cell_type": "code",
-                "execution_count": None,
-                "metadata": {},
-                "outputs": [],
-                "source": [line + '\n' for line in cell_item['content'].split('\n')]
-            })
-        elif cell_item['type'] == 'markdown':
-            notebook_cells.append({
-                "cell_type": "markdown",
-                "metadata": {},
-                "source": [line + '\n' for line in cell_item['content'].split('\n')]
-            })
-            
-    notebook_json = {
-        "nbformat": 4,
-        "nbformat_minor": 0,
-        "metadata": {
-            "colab": {
-                "provenance": []
-            },
-            "kernelspec": {
-                "name": "python3",
-                "display_name": "Python 3"
-            },
-            "language_info": {
-                "name": "python"
-            }
-        },
-        "cells": notebook_cells
-    }
-    return json.dumps(notebook_json, indent=2)
+  """Cria a estrutura JSON de um notebook .ipynb a partir dos dados das células."""
+  notebook_cells = []
+  for cell_item in cells_data:
+      if cell_item['type'] == 'code':
+          notebook_cells.append({
+              "cell_type": "code",
+              "execution_count": None,
+              "metadata": {},
+              "outputs": [],
+              "source": [line + '\n' for line in cell_item['content'].split('\n')]
+          })
+      elif cell_item['type'] == 'markdown':
+          notebook_cells.append({
+              "cell_type": "markdown",
+              "metadata": {},
+              "source": [line + '\n' for line in cell_item['content'].split('\n')]
+          })
+          
+  notebook_json = {
+      "nbformat": 4,
+      "nbformat_minor": 0,
+      "metadata": {
+          "colab": {
+              "provenance": []
+          },
+          "kernelspec": {
+              "name": "python3",
+              "display_name": "Python 3"
+          },
+          "language_info": {
+              "name": "python"
+          }
+      },
+      "cells": notebook_cells
+  }
+  return json.dumps(notebook_json, indent=2)
 
 def main():
   """Função principal que orquestra todo o processo."""
@@ -125,7 +125,6 @@ def main():
   # Se não conseguiu extrair o ID, tenta outros padrões comuns
   if not notebook_id:
       # Tenta extrair usando regex para capturar IDs do Google Drive
-      import re
       id_pattern = r'[a-zA-Z0-9_-]{25,}'
       matches = re.findall(id_pattern, notebook_link)
       if matches:
@@ -138,7 +137,7 @@ def main():
   if not notebook_id:
       print("Erro: Não foi possível extrair o ID do notebook do link fornecido.")
       print("Certifique-se de que você copiou o link completo do Google Colab.")
-      return  # Agora o return está corretamente indentado
+      return
 
   print(f"ID do Notebook identificado: {notebook_id}")
       
@@ -189,3 +188,6 @@ def main():
   else:
       print("Operação cancelada pelo usuário.")
       os.remove(temp_filename)
+
+if __name__ == '__main__':
+  main()
