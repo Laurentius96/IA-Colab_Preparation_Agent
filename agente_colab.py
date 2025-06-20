@@ -3,12 +3,44 @@ import re
 import json
 import sys
 import time
+import tkinter as tk
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
+from tkinter import filedialog, simpledialog, scrolledtext, messagebox
+
+def obter_dados_via_gui():
+    root = tk.Tk()
+    root.title("Agente Colab")
+    root.geometry("600x500")
+    
+    # Link do Colab
+    tk.Label(root, text="Link do Google Colab:", anchor="w").pack(fill="x", padx=10, pady=(10,0))
+    link_var = tk.StringVar()
+    tk.Entry(root, textvariable=link_var).pack(fill="x", padx=10)
+
+    # Texto da aula
+    tk.Label(root, text="Cole aqui a aula (Ctrl+V):", anchor="w").pack(fill="x", padx=10, pady=(10,0))
+    texto_widget = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=15)
+    texto_widget.pack(fill="both", expand=True, padx=10, pady=(0,10))
+
+    def iniciar():
+        link = link_var.get().strip()
+        conteudo = texto_widget.get("1.0", tk.END).strip()
+        if not link or not conteudo:
+            messagebox.showerror("Erro", "Preencha o link e cole o texto da aula antes de continuar.")
+            return
+        root.destroy()
+        # Variáveis globais que o main() vai usar
+        global GUI_LINK, GUI_AULA
+        GUI_LINK = link
+        GUI_AULA = conteudo
+
+    tk.Button(root, text="Iniciar", command=iniciar).pack(pady=(0,10))
+    root.mainloop()
 
 # Escopos de permissão: Acesso total ao Google Drive
 SCOPES = ['https://www.googleapis.com/auth/drive']
