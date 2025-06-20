@@ -1,7 +1,4 @@
-import os
-import re
-import json
-import tkinter as tk
+import sys, os, re, json, tkinter as tk
 from tkinter import scrolledtext, messagebox
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -9,6 +6,12 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
+
+# define BASE_PATH para .exe empacotado ou .py
+if getattr(sys, "frozen", False):
+    BASE_PATH = sys._MEIPASS
+else:
+    BASE_PATH = os.path.dirname(__file__)
 
 # --------- Configurações ---------
 SCOPES = ['https://www.googleapis.com/auth/drive']
