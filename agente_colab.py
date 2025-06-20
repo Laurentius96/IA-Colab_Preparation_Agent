@@ -239,6 +239,10 @@ def create_notebook_structure(cells_data):
 def main():
     """Função principal que orquestra todo o processo."""
     print("🚀 INICIANDO AGENTE DE PREPARAÇÃO DO COLAB")
+    # obtém link e aula pela interface gráfica
+    obter_dados_via_gui()
+    notebook_link = GUI_LINK
+    synapse_output = GUI_AULA
     print("=" * 70)
     print("📅 Versão: DEFINITIVA - Parser Inteligente")
     print("🧠 Cérebro: Regex Avançado para Estruturas Complexas")
