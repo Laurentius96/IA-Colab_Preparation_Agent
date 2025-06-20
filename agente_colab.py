@@ -1,4 +1,8 @@
-import sys, os, re, json, tkinter as tk
+import os
+import re
+import json
+import time
+import tkinter as tk
 from tkinter import scrolledtext, messagebox
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -7,18 +11,12 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
 
-# define BASE_PATH para .exe empacotado ou .py
-if getattr(sys, "frozen", False):
-    BASE_PATH = sys._MEIPASS
-else:
-    BASE_PATH = os.path.dirname(__file__)
-
 # --------- Configurações ---------
 SCOPES = ['https://www.googleapis.com/auth/drive']
 CLIENT_SECRETS_FILE = 'client_secrets.json'
 
+# --------- Interface Gráfica ---------
 def obter_dados_via_gui():
-    """Abre interface para o usuário inserir link e colar a aula."""
     root = tk.Tk()
     root.title("Agente Colab")
     root.geometry("600x500")
@@ -45,20 +43,19 @@ def obter_dados_via_gui():
     tk.Button(root, text="Iniciar", command=iniciar).pack(pady=10)
     root.mainloop()
 
+# --------- Funções de Backend ---------
 
 def check_requirements():
-    """Verifica se o arquivo de credenciais existe."""
     if not os.path.exists(CLIENT_SECRETS_FILE):
         messagebox.showerror(
             "Erro de Pré-requisito",
-            f"Arquivo '{CLIENT_SECRETS_FILE}' não encontrado. Baixe as credenciais."
+            f"Arquivo '{CLIENT_SECRETS_FILE}' não encontrado. Você precisa baixar as credenciais."
         )
         return False
     return True
 
 
 def authenticate():
-    """Autentica no Google Drive e retorna o serviço."""
     creds = None
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
@@ -78,39 +75,45 @@ def authenticate():
 
 
 def parse_synapse_output(text):
-    """Converte o texto Modo Aula em células para um notebook."""
-    # Remove seção opcional
+    """Converte texto Modo Aula em lista de células para notebook."""
+    # Remove seções opcionais
     if "🌊 Mergulhos Adicionais Opcionais" in text:
         text = text.split("🌊 Mergulhos Adicionais Opcionais")[0]
-    # Regex para markdown, código e leitura
+    # Regex para blocos
     pattern = re.compile(
-        r"(```markdown\n(.*?)\n```)|(▶️.*?```python\n(.*?)\n```)|(📖.*?```markdown\n(.*?)\n```)" ,
-        re.DOTALL
+        r"(```markdown
+(.*?)
+```)|(▶️.*?```python
+(.*?)
+```)"
+        r"|(📖.*?```markdown
+(.*?)
+```)"
+        , re.DOTALL
     )
     cells = []
     for match in pattern.finditer(text):
         md, code, read = match.group(2), match.group(4), match.group(6)
         if md:
-            content = md.replace('<br>', '\n\n').strip()
+            # remove tags <br> e strip
+            content = md.replace('<br>', '
+
+').strip()
             cells.append({'type': 'markdown', 'content': content})
         elif code:
             code_content = code.strip()
             cells.append({'type': 'code', 'content': code_content})
             cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
         elif read:
-            content = read.replace('<br>', '\n\n').strip()
+            content = read.replace('<br>', '
+
+').strip()
             cells.append({'type': 'markdown', 'content': content})
     return cells
 
 
 def create_notebook_structure(cells_data):
-    """Gera JSON de um notebook .ipynb a partir das células."""
-    notebook = {
-        'nbformat': 4,
-        'nbformat_minor': 0,
-        'metadata': {},
-        'cells': []
-    }
+    notebook = {'nbformat': 4, 'nbformat_minor': 0, 'metadata': {}, 'cells': []}
     for cell in cells_data:
         entry = {
             'metadata': {},
@@ -123,6 +126,7 @@ def create_notebook_structure(cells_data):
         notebook['cells'].append(entry)
     return json.dumps(notebook, indent=2)
 
+# --------- Função Principal ---------
 
 def main():
     obter_dados_via_gui()
@@ -135,7 +139,8 @@ def main():
     if not service:
         return
 
-    # Extrai ID do notebook
+    # Extrai ID do notebook, removendo parâmetros
+    notebook_id = None
     if '/d/' in notebook_link:
         part = notebook_link.split('/d/')[1]
     elif '/drive/' in notebook_link:
@@ -154,13 +159,14 @@ def main():
         return
     notebook_json = create_notebook_structure(cells)
 
+    # Salva temporário
     temp_file = 'temp_notebook.ipynb'
     with open(temp_file, 'w', encoding='utf-8') as f:
         f.write(notebook_json)
 
+    # Confirmação final GUI
     if not messagebox.askyesno(
-        "Confirmação",
-        "Esta operação substituirá o notebook no Colab. Deseja continuar?"
+        "Confirmação", "Esta operação substituirá o notebook no Colab. Deseja continuar?"
     ):
         messagebox.showinfo("Cancelado", "Operação cancelada pelo usuário.")
         try:
@@ -169,8 +175,8 @@ def main():
             pass
         return
 
+    # Upload
     try:
-        MediaFileUpload  # para importar
         media = MediaFileUpload(temp_file, mimetype='application/vnd.google-colaboratory')
         service.files().update(fileId=notebook_id, media_body=media).execute()
         messagebox.showinfo("Sucesso", "Notebook atualizado com sucesso no Colab.")
