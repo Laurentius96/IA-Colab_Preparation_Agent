@@ -21,10 +21,12 @@ def obter_dados_via_gui():
     root.title("Agente Colab")
     root.geometry("600x500")
 
+    # Link do Colab
     tk.Label(root, text="Link do Google Colab:", anchor="w").pack(fill="x", padx=10, pady=(10,5))
     link_var = tk.StringVar()
     tk.Entry(root, textvariable=link_var).pack(fill="x", padx=10)
 
+    # Texto da aula
     tk.Label(root, text="Cole aqui a aula (Ctrl+V):", anchor="w").pack(fill="x", padx=10, pady=(10,5))
     texto_widget = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=15)
     texto_widget.pack(fill="both", expand=True, padx=10)
@@ -79,41 +81,39 @@ def parse_synapse_output(text):
     # Remove seções opcionais
     if "🌊 Mergulhos Adicionais Opcionais" in text:
         text = text.split("🌊 Mergulhos Adicionais Opcionais")[0]
-    # Regex para blocos
+
+    # Regex para blocos de markdown, código e leitura
     pattern = re.compile(
-        r"(```markdown
-(.*?)
-```)|(▶️.*?```python
-(.*?)
-```)"
-        r"|(📖.*?```markdown
-(.*?)
-```)"
+        r"(```markdown\n(.*?)\n```)|"
+        r"(▶️.*?```python\n(.*?)\n```)|"
+        r"(📖.*?```markdown\n(.*?)\n```)"
         , re.DOTALL
     )
+
     cells = []
     for match in pattern.finditer(text):
         md, code, read = match.group(2), match.group(4), match.group(6)
         if md:
-            # remove tags <br> e strip
-            content = md.replace('<br>', '
-
-').strip()
+            # converte <br> em parágrafos
+            content = md.replace('<br>', '\n\n').strip()
             cells.append({'type': 'markdown', 'content': content})
         elif code:
             code_content = code.strip()
             cells.append({'type': 'code', 'content': code_content})
             cells.append({'type': 'code', 'content': '# Pratique seu código aqui!'})
         elif read:
-            content = read.replace('<br>', '
-
-').strip()
+            content = read.replace('<br>', '\n\n').strip()
             cells.append({'type': 'markdown', 'content': content})
     return cells
 
 
 def create_notebook_structure(cells_data):
-    notebook = {'nbformat': 4, 'nbformat_minor': 0, 'metadata': {}, 'cells': []}
+    notebook = {
+        'nbformat': 4,
+        'nbformat_minor': 0,
+        'metadata': {},
+        'cells': []
+    }
     for cell in cells_data:
         entry = {
             'metadata': {},
@@ -139,7 +139,7 @@ def main():
     if not service:
         return
 
-    # Extrai ID do notebook, removendo parâmetros
+    # Extrai ID do Colab
     notebook_id = None
     if '/d/' in notebook_link:
         part = notebook_link.split('/d/')[1]
@@ -159,14 +159,13 @@ def main():
         return
     notebook_json = create_notebook_structure(cells)
 
-    # Salva temporário
     temp_file = 'temp_notebook.ipynb'
     with open(temp_file, 'w', encoding='utf-8') as f:
         f.write(notebook_json)
 
-    # Confirmação final GUI
     if not messagebox.askyesno(
-        "Confirmação", "Esta operação substituirá o notebook no Colab. Deseja continuar?"
+        "Confirmação",
+        "Esta operação substituirá o notebook no Colab. Deseja continuar?"
     ):
         messagebox.showinfo("Cancelado", "Operação cancelada pelo usuário.")
         try:
@@ -175,7 +174,6 @@ def main():
             pass
         return
 
-    # Upload
     try:
         media = MediaFileUpload(temp_file, mimetype='application/vnd.google-colaboratory')
         service.files().update(fileId=notebook_id, media_body=media).execute()
@@ -190,4 +188,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
