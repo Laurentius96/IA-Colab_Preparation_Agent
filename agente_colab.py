@@ -268,7 +268,7 @@ def main():
     # 1. Obter o ID do notebook do Google Colab
     print("📎 PASSO 1: IDENTIFICAR O NOTEBOOK")
     print("-" * 35)
-    notebook_link = input("Cole o link completo do seu Google Colab Notebook: ")
+    
     
     # Verifica qual formato de URL foi usado e extrai o ID corretamente
     notebook_id = None
@@ -328,18 +328,10 @@ def main():
     print("   • Linux/Mac: Ctrl+D")
     print("-" * 70)
     
-    synapse_output = ""
+    
     line_count = 0
     
-    while True:
-        try:
-            line = input()
-            synapse_output += line + '\n'
-            line_count += 1
-            if line_count % 10 == 0:  # Mostra progresso a cada 10 linhas
-                print(f"📄 {line_count} linhas coladas...")
-        except EOFError:
-            break
+    
     
     print(f"✅ Conteúdo colado: {line_count} linhas, {len(synapse_output)} caracteres")
             
