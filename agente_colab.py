@@ -1,7 +1,6 @@
 import os
 import re
 import json
-import time
 import tkinter as tk
 from tkinter import scrolledtext, messagebox
 from google.auth.transport.requests import Request
@@ -15,18 +14,16 @@ from googleapiclient.http import MediaFileUpload
 SCOPES = ['https://www.googleapis.com/auth/drive']
 CLIENT_SECRETS_FILE = 'client_secrets.json'
 
-# --------- Interface Gráfica ---------
 def obter_dados_via_gui():
+    """Abre interface para o usuário inserir link e colar a aula."""
     root = tk.Tk()
     root.title("Agente Colab")
     root.geometry("600x500")
 
-    # Link do Colab
     tk.Label(root, text="Link do Google Colab:", anchor="w").pack(fill="x", padx=10, pady=(10,5))
     link_var = tk.StringVar()
     tk.Entry(root, textvariable=link_var).pack(fill="x", padx=10)
 
-    # Texto da aula
     tk.Label(root, text="Cole aqui a aula (Ctrl+V):", anchor="w").pack(fill="x", padx=10, pady=(10,5))
     texto_widget = scrolledtext.ScrolledText(root, wrap=tk.WORD, height=15)
     texto_widget.pack(fill="both", expand=True, padx=10)
@@ -45,19 +42,20 @@ def obter_dados_via_gui():
     tk.Button(root, text="Iniciar", command=iniciar).pack(pady=10)
     root.mainloop()
 
-# --------- Funções de Backend ---------
 
 def check_requirements():
+    """Verifica se o arquivo de credenciais existe."""
     if not os.path.exists(CLIENT_SECRETS_FILE):
         messagebox.showerror(
             "Erro de Pré-requisito",
-            f"Arquivo '{CLIENT_SECRETS_FILE}' não encontrado. Você precisa baixar as credenciais."
+            f"Arquivo '{CLIENT_SECRETS_FILE}' não encontrado. Baixe as credenciais."
         )
         return False
     return True
 
 
 def authenticate():
+    """Autentica no Google Drive e retorna o serviço."""
     creds = None
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
@@ -77,24 +75,19 @@ def authenticate():
 
 
 def parse_synapse_output(text):
-    """Converte texto Modo Aula em lista de células para notebook."""
-    # Remove seções opcionais
+    """Converte o texto Modo Aula em células para um notebook."""
+    # Remove seção opcional
     if "🌊 Mergulhos Adicionais Opcionais" in text:
         text = text.split("🌊 Mergulhos Adicionais Opcionais")[0]
-
-    # Regex para blocos de markdown, código e leitura
+    # Regex para markdown, código e leitura
     pattern = re.compile(
-        r"(```markdown\n(.*?)\n```)|"
-        r"(▶️.*?```python\n(.*?)\n```)|"
-        r"(📖.*?```markdown\n(.*?)\n```)"
-        , re.DOTALL
+        r"(```markdown\n(.*?)\n```)|(▶️.*?```python\n(.*?)\n```)|(📖.*?```markdown\n(.*?)\n```)" ,
+        re.DOTALL
     )
-
     cells = []
     for match in pattern.finditer(text):
         md, code, read = match.group(2), match.group(4), match.group(6)
         if md:
-            # converte <br> em parágrafos
             content = md.replace('<br>', '\n\n').strip()
             cells.append({'type': 'markdown', 'content': content})
         elif code:
@@ -108,6 +101,7 @@ def parse_synapse_output(text):
 
 
 def create_notebook_structure(cells_data):
+    """Gera JSON de um notebook .ipynb a partir das células."""
     notebook = {
         'nbformat': 4,
         'nbformat_minor': 0,
@@ -126,7 +120,6 @@ def create_notebook_structure(cells_data):
         notebook['cells'].append(entry)
     return json.dumps(notebook, indent=2)
 
-# --------- Função Principal ---------
 
 def main():
     obter_dados_via_gui()
@@ -139,8 +132,7 @@ def main():
     if not service:
         return
 
-    # Extrai ID do Colab
-    notebook_id = None
+    # Extrai ID do notebook
     if '/d/' in notebook_link:
         part = notebook_link.split('/d/')[1]
     elif '/drive/' in notebook_link:
@@ -175,6 +167,7 @@ def main():
         return
 
     try:
+        MediaFileUpload  # para importar
         media = MediaFileUpload(temp_file, mimetype='application/vnd.google-colaboratory')
         service.files().update(fileId=notebook_id, media_body=media).execute()
         messagebox.showinfo("Sucesso", "Notebook atualizado com sucesso no Colab.")
@@ -188,3 +181,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
