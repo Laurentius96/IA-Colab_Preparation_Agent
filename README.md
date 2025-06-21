@@ -1,63 +1,67 @@
 # IA Agente de Preparação Do Colab
 
-Um pequeno utilitário desktop para transformar automaticamente aulas no **Modo Aula** (markdown + blocos de código) em notebooks interativos do Google Colab, substituindo diretamente o conteúdo de um notebook existente no Drive.
-
-
-
-## 📝 Descrição
-
-Este projeto fornece um script Python (e um executável Windows gerado com PyInstaller) que:
-
-1. Abre uma GUI simples (Tkinter/ttk) para o usuário colar:
-   - **Link** de um notebook Colab (Drive ID).
-   - **Texto** da aula no formato “Modo Aula” (markdown + blocos de código).
-2. Parseia o conteúdo, preservando rigorosamente:
-   - Marcação markdown.
-   - Blocos de código Python.
-   - Tags `<br>` (com espaços antes e depois, quando há texto adjacente).
-3. Gera dinamicamente um arquivo `.ipynb` e o envia à API do Google Drive, substituindo o notebook existente.
-4. Remove automaticamente seções opcionais (“Mergulhos Adicionais Opcionais”) e adiciona células de prática após cada bloco de código.
-
-> **Nota**: Para garantir estabilidade, mantemos uma **versão antiga** do parser/GUI — foi a que apresentou comportamento 100% confiável. Futuras versões podem evoluir para adotar melhorias, mas esta traz garantia de funcionamento.
+A lightweight desktop utility to automatically transform **Modo Aula** lessons (Markdown + code blocks) into interactive Google Colab notebooks by replacing an existing notebook’s contents on Drive.
 
 ---
 
-## 🚀 Funcionalidades
+## 📝 Overview
 
-- 🎨 **GUI intuitiva**: Entrada de link e texto em uma única janela.
-- 🔍 **Parser inteligente**:
-  - Detecta seções `###`, blocos ```markdown```, ▶️…```python``` e 📖…```markdown```.
-  - Preserva `<br>` com inserção de espaços quando necessário.
-- 📄 **Geração de notebook**:
-  - Cria células de markdown e código no formato Jupyter.
-  - Adiciona automaticamente células vazias de prática após cada bloco de código.
-- ☁️ **Upload direto** ao Google Drive via API v3.
-- 🔒 **Autenticação OAuth2** com armazenamento de token (token.json).
-- 🛠️ **Empacotado para Windows** como `.exe` (PyInstaller).
+This project provides a Python script (and a Windows executable built with PyInstaller) that:
+
+1. Presents a simple GUI (Tkinter/ttk) where the user pastes:
+
+   * A **Colab link** (Drive ID).
+   * The lesson **content** in “Modo Aula” format (Markdown + code blocks).
+2. Parses the input, preserving:
+
+   * Markdown structure.
+   * Python code blocks.
+   * `<br>` tags (ensuring spaces before/after when adjacent to text).
+3. Dynamically generates a `.ipynb` file and uploads it via the Google Drive API (v3) to overwrite the existing notebook.
+4. Automatically strips optional sections (“Mergulhos Adicionais Opcionais”) and injects “practice” cells after each code block.
+
+> **Note:** For rock-solid stability, we maintain an **older stable version** of the parser/GUI which proved 100 % reliable. Future updates may refine this, but this version guarantees predictable behavior.
 
 ---
 
-## 📦 Estrutura do Repositório
+## 🚀 Features
+
+* 🎨 **Intuitive GUI**: Single window for link & lesson input
+* 🔍 **Smart Parser**
+
+  * Detects `###` headings, \`\`\`\`markdown\`\`, `▶️ … ```python```, and `📖 … `markdown`.
+  * Preserves `<br>` tags with appropriate spacing.
+* 📄 **Notebook Generation**
+
+  * Creates Jupyter-style markdown and code cells.
+  * Inserts empty “practice” cells automatically after each code block.
+* ☁️ **Direct Drive Upload** via Google Drive API
+* 🔒 **OAuth2 Authentication**, with token storage (`token.json`)
+* 🛠️ **Single-file Windows executable** via PyInstaller
+
+---
+
+## 📦 Repository Structure
 
 ```text
 IA_Agente-De-Preparacao-Do-Colab/
-├── agente_colab.py        # Script principal em Python
-├── agente_colab.spec      # Arquivo de build PyInstaller
-├── client_secrets.json    # Credenciais OAuth2 (não comitar senhas!)
-├── token.json             # Token de acesso Google Drive
-├── Icone.ico              # Ícone da aplicação (Tkinter)
-├── build/                 # Pasta temporária do PyInstaller
-├── dist/                  # Executável gerado (dist/agente_colab.exe)
-├── README.md              # Este arquivo
-└── LICENSE.md             # Licença do projeto
-````
+├── agente_colab.py        # Main Python script
+├── agente_colab.spec      # PyInstaller build spec
+├── client_secrets.json    # OAuth2 credentials (do NOT commit secrets)
+├── token.json             # Stored OAuth token
+├── Icone.ico              # Custom app icon for Tkinter
+├── build/                 # PyInstaller build artifacts
+├── dist/                  # Generated executable (dist/agente_colab.exe)
+├── README.md              # This README
+└── LICENSE.md             # Project license
+```
 
 ---
 
-## ⚙️ Pré-requisitos
+## ⚙️ Prerequisites
 
-1. **Python 3.8+** instalado (para rodar o `.py` diretamente).
-2. Bibliotecas Python:
+1. **Python 3.8+** installed (if running the `.py` directly)
+2. Install dependencies:
 
    ```bash
    pip install \
@@ -65,68 +69,70 @@ IA_Agente-De-Preparacao-Do-Colab/
      google-auth-oauthlib \
      google-auth-httplib2 \
      google-api-python-client \
-     tkinter \
      pyinstaller
    ```
-3. **client\_secrets.json** obtido no Google Cloud Console (OAuth 2.0 Client ID, Desktop).
-4. Permissão de edição para o notebook de destino no Google Drive.
+
+   *(Tkinter is included with standard Python on Windows and macOS.)*
+3. **client\_secrets.json** from Google Cloud Console (OAuth 2.0 Desktop ID).
+4. **Edit permission** on the target Colab notebook in Google Drive.
 
 ---
 
-## 🚦 Como usar
+## 🚦 Usage
 
-### Rodando o script em Python
+### Running the Python script
 
 ```bash
 python agente_colab.py
 ```
 
-1. Cole o **link** do seu notebook Colab (ex: `https://colab.research.google.com/drive/SEU_ID`).
-2. Cole todo o **texto da aula** no formato “Modo Aula” (markdown + blocos de código).
-3. Confirme para que ele parseie e envie o novo `.ipynb` ao Drive.
+1. Paste your **Colab link** (e.g. `https://colab.research.google.com/drive/SEU_ID`).
+2. Paste the entire **lesson content** in “Modo Aula” format.
+3. Click **Convert & Send** and wait for confirmation.
 
-### Gerando o executável Windows
+### Building the Windows Executable
 
 ```bash
-pyinstaller --noconfirm --onefile \
-    --windowed agente_colab.spec
+pyinstaller --noconfirm --onefile --windowed agente_colab.spec
 ```
 
-O binário resultante ficará em `dist/agente_colab.exe`. Basta copiar `client_secrets.json` e `token.json` para a mesma pasta do `.exe`.
+Place `client_secrets.json` (and `token.json` after first run) beside `dist/agente_colab.exe`.
 
 ---
 
-## 📚 Exemplo de uso
+## 📚 Example
 
-1. Abra o programa.
+1. Launch the application.
+2. Enter:
 
-2. Insira:
+   * **Colab Link**:
 
-   * **Link do Colab**:
-     `https://colab.research.google.com/drive/1lEuFgPC8vFYuOu3nyn3j20heIfaoG6Ag`
-   * **Conteúdo Modo Aula** (exemplo):
+     ```text
+     https://colab.research.google.com/drive/1lEuFgPC8vFYuOu3nyn3j20heIfaoG6Ag
+     ```
+   * **Lesson Content**:
 
      ```markdown
-     ## 🎓 Aula sobre: A Função print() e F-Strings
+     ### 3. 🕸️ Profundezas e Conexões
 
      <br>
+     `print()` is widely replaced by *logging* frameworks in production…
+     <br>
 
-     ### 🧭 Sumário da Aula
-     ...
+     ---
+     <br>
      ```
-
-3. Clique em **Converter e Enviar**.
-
-4. Aguarde a confirmação de sucesso.
+3. Click **Convert & Send**.
+4. See success message once the notebook is updated.
 
 ---
 
-## 🔧 Contribuições
+## 🔧 Contributing
 
-1. Abra um issue descrevendo a melhoria ou bug.
-2. Fork o repositório e crie um branch (`feature/nova-funcionalidade`).
-3. Faça seu desenvolvimento e adicione testes.
-4. Envie um Pull Request.
+1. Open an issue to discuss your idea or bug.
+2. Fork the repo & create a branch (`feature/awesome`).
+3. Implement, document, add tests.
+4. Submit a Pull Request.
 
 ---
 
