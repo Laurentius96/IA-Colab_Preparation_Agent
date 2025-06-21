@@ -1,0 +1,5 @@
+2025-06-21 17:19:14,603 - INFO - "GET /?state=BsPmLdraroYC8wrHYQx0xw0VRj5MUN&code=4/0AUJR-x5N4JKmX-bpAFUp666AF9luUMUwAIGXCN4VxxDZS1o09U4KHD9eclh3ir3GCzBNoQ&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-21 17:19:15,051 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-21 17:19:15,053 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-21 17:19:15,054 - INFO - Parser extraiu 28 células.
+2025-06-21 17:21:18,098 - WARNING - Inputs não fornecidos, encerrando.
