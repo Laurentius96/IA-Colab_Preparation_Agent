@@ -1,0 +1,65 @@
+2025-06-21 17:19:14,603 - INFO - "GET /?state=BsPmLdraroYC8wrHYQx0xw0VRj5MUN&code=4/0AUJR-x5N4JKmX-bpAFUp666AF9luUMUwAIGXCN4VxxDZS1o09U4KHD9eclh3ir3GCzBNoQ&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-21 17:19:15,051 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-21 17:19:15,053 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-21 17:19:15,054 - INFO - Parser extraiu 28 células.
+2025-06-21 17:21:18,098 - WARNING - Inputs não fornecidos, encerrando.
+2025-06-22 16:18:12,659 - WARNING - Inputs não fornecidos, encerrando.
+2025-06-23 14:49:16,109 - INFO - "GET /?state=g4pKh7mohbHCTmyye7jyHdlvSFNLGG&code=4/0AUJR-x4bF6c2kf3lITI1x6TIl3jicnM7If59Nxz215drm__dRChB6F92urm_Lu4u_86ocg&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-23 14:49:16,649 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-23 14:49:16,652 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-23 14:49:16,652 - INFO - Parser extraiu 28 células.
+2025-06-23 16:17:24,925 - INFO - "GET /?state=BWfkI4n8M30MUZiLDlFB8umRkdVbSy&code=4/0AUJR-x5XFiKpFCl4sk-EUwLCUu9RlbU_0V8j3yt9pTRdx52o_FcXZHe6idN_DUhg2E0djw&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-23 16:17:25,426 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-23 16:17:25,429 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-23 16:17:25,429 - INFO - Parser extraiu 29 células.
+2025-06-23 17:45:29,659 - INFO - "GET /?state=qg4e7sPa46JgmZqFOE49mCtKo021Qt&code=4/0AUJR-x7V1U-jlI_EQHPBXRpJAf_Hfh9FFCaydtLkKfiQzuwKpU4VXCVa5AXBjpU5l8_TiA&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-23 17:45:30,115 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-23 17:45:30,117 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-23 17:45:30,118 - INFO - Parser extraiu 29 células.
+2025-06-23 18:25:17,077 - INFO - "GET /?state=P4ok50NJUgOwVitqeZrOHbu6R9rx21&code=4/0AUJR-x55ToJ_PPhKNum1MJGpOl-sExM97vIGX9tGnUgAiSjMHNRVfQtza0gq5j1VG-OOPA&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-23 18:25:17,559 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-23 18:25:17,563 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-23 18:25:17,563 - INFO - Parser extraiu 29 células.
+2025-06-23 19:21:28,677 - INFO - "GET /?state=9NyussUNy4TxnOLQx9sF2ixORnkpaO&code=4/0AUJR-x4nsm05_YL6Amv-SDKKxVzqR5GSr44UtV4R0q-l1JvF-QTB4ISMSABrhYcMOmmmhA&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-23 19:21:29,168 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-23 19:21:29,172 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-23 19:21:29,173 - INFO - Parser extraiu 29 células.
+2025-06-23 20:49:36,664 - INFO - "GET /?state=XeDpbN5zSjQDOCHvynZJ8ufkEWhSxz&code=4/0AUJR-x5DRWT6fBX7gsRZ7XcE_4EhnI039gCVmDjqEnru1huI0MR56q23s-RvKmhuwHaupg&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-23 20:49:37,183 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-23 20:49:37,186 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-23 20:49:37,187 - INFO - Parser extraiu 29 células.
+2025-06-24 14:57:29,035 - INFO - "GET /?state=TQHKSXFLwAwXA2hGX0wMtFqIu9IFk4&code=4/0AVMBsJiUXRN1lJETdpErtJudhqsyhwGz3x03uInEwq5gIC9g0fFn6u-9YK61UokhfklazQ&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-24 14:57:29,544 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-24 14:57:29,547 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-24 14:57:29,548 - INFO - Parser extraiu 29 células.
+2025-06-24 15:32:53,637 - INFO - "GET /?state=RMJvo2tWhKJuJpmqkHaIzy1eYFGWRy&code=4/0AUJR-x4S_X7g3NX6VGNl2rDnFjf1oPj5KzWyAjgUjG9fCkoxDkeFFRw8k8xMyr6eYs-V1A&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-24 15:32:54,126 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-24 15:32:54,129 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-24 15:32:54,129 - INFO - Parser extraiu 29 células.
+2025-06-28 15:15:27,436 - INFO - "GET /?state=56FtNmFep7ZukLs4hFvymxUyoGiGIu&code=4/0AVMBsJhQOHRi01zu34VDnennYe8MgruE3sgK1ad9ZlAZC1ukFUNt7DR7TPTRM9jFsdpW8g&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-28 15:15:28,259 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-28 15:15:28,262 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-28 15:15:28,263 - INFO - Parser extraiu 29 células.
+2025-06-28 16:08:08,870 - INFO - "GET /?state=JaJVmqQtaD6aGGYjSLi4MchwZcj9Lm&code=4/0AVMBsJiOIniDWY9mOsbSp9ZaGVmX37dRX3u7mzP-Q1y5YB4Oscm-KjWgneBUAN26L672eA&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-28 16:08:09,822 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-28 16:08:09,825 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-28 16:08:09,826 - INFO - Parser extraiu 29 células.
+2025-06-28 18:07:48,150 - INFO - "GET /?state=UT1C2qvmGRZ6HCy0OYlP4h76oB4Obj&code=4/0AVMBsJh_G7OXLY-SXBZEtxz8VlqOuqC3fxv7tUK7YhVdflhR4_WKrMNvDaBL8Z3iBhFgyw&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-28 18:07:48,793 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-28 18:07:48,796 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-28 18:07:48,797 - INFO - Parser extraiu 29 células.
+2025-06-28 19:46:54,634 - WARNING - Inputs não fornecidos, encerrando.
+2025-06-28 19:46:55,391 - WARNING - Inputs não fornecidos, encerrando.
+2025-06-28 19:47:24,476 - INFO - "GET /?state=RHPjIvkHlFbcuSpTremhEgcFEfihyo&code=4/0AVMBsJizPEFFaTPpfSblKyN7AHT5Q-SDJwmAOcNRTyOVfC8pDmNo5MKAv9q6w992LP8ZTQ&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-06-28 19:47:25,862 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-06-28 19:47:25,865 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-06-28 19:47:25,866 - INFO - Parser extraiu 29 células.
+2025-07-01 17:44:03,910 - WARNING - Inputs não fornecidos, encerrando.
+2025-07-01 18:06:35,966 - INFO - "GET /?state=o2XTDJgrowmga2vGVApRtx319Ky2qX&code=4/0AVMBsJhvzylOBwVMv8pXn33BU4ru_jimOTlDdipO2BZLD0268IeXctDMk1rttM9d1h3lHg&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-07-01 18:06:36,447 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-07-01 18:06:36,450 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-07-01 18:06:36,451 - INFO - Parser extraiu 29 células.
+2025-07-01 18:59:16,651 - INFO - "GET /?state=LsLWSNy4j3GrxJ5J6f5ef11W3wiUaG&code=4/0AVMBsJjFeRGdaDa6agXxEpq5g6rxvGGY9Zfc2SoAzqnR5XA9gGU3YlcZiC7HSzwjfyvTaw&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-07-01 18:59:17,208 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-07-01 18:59:17,211 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-07-01 18:59:17,212 - INFO - Parser extraiu 29 células.
