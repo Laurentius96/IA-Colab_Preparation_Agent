@@ -78,3 +78,7 @@
 2025-07-03 20:12:03,907 - INFO - file_cache is only supported with oauth2client<4.0.0
 2025-07-03 20:12:03,910 - INFO - Autenticação bem-sucedida no Google Drive.
 2025-07-03 20:12:03,911 - INFO - Parser extraiu 29 células.
+2025-07-03 20:21:35,494 - INFO - "GET /?state=yIz8Xc8foGxYDGtkvXmj0dnNFLJxI4&code=4/0AVMBsJiZeLCNWLJDOAJ4zSUPRpRlQSSIjySXs3pWcas8pRhFN1OrXXo64GxakAvGX10y4Q&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
+2025-07-03 20:21:36,052 - INFO - file_cache is only supported with oauth2client<4.0.0
+2025-07-03 20:21:36,054 - INFO - Autenticação bem-sucedida no Google Drive.
+2025-07-03 20:21:36,055 - INFO - Parser extraiu 29 células.
