@@ -1,4 +1,4 @@
-# IA Agente de Preparação Do Colab
+ <div align="center">  <h1> IA Colab Preparation Agent </div>
 
 A lightweight desktop utility to automatically transform **Modo Aula** lessons (Markdown + code blocks) into interactive Google Colab notebooks by replacing an existing notebook’s contents on Drive.
 
