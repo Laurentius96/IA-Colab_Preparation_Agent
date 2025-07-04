@@ -159,6 +159,6 @@ For questions or suggestions about this repository, please contact me through Gi
 
 ---
 
-*Feito com ❤️ por [Laurentius96](https://github.com/Laurentius96), baseada em uma versão estável anterior que comprovou total confiabilidade.*
+*Feito com ❤️ por [Lorenzo C. Bianchi](https://github.com/Laurentius96), baseada em uma versão estável anterior que comprovou total confiabilidade.*
 
 
