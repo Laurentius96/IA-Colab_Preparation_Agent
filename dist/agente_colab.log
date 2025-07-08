@@ -1,4 +1,0 @@
-2025-07-08 11:29:51,694 - INFO - "GET /?state=DeesISjfPYm3Jy8YrUCAgSkJu69M4n&code=4/0AVMBsJi1A_hG2iiDTLlytiMaJEk19Ugti3pEZxyihD2RKdJOxcvZtxYIIvzsnr9p2mRexw&scope=https://www.googleapis.com/auth/drive HTTP/1.1" 200 65
-2025-07-08 11:29:52,199 - INFO - file_cache is only supported with oauth2client<4.0.0
-2025-07-08 11:29:52,201 - INFO - Autenticação bem-sucedida no Google Drive.
-2025-07-08 11:29:52,201 - INFO - Parser extraiu 0 células.
