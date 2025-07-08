@@ -37,7 +37,8 @@ def converter_conteudo_para_notebook(raw: str) -> dict:
     1) Isola tudo após o primeiro '---' de separador.
     2) Extrai cada fence ```markdown``` e ```python```.
     3) Para markdown: injeta ' ' antes/depois de <br> se colado a texto.
-    4) Retorna dict ready‐to‐dump para .ipynb.
+    4) Após cada bloco python, insere célula de prática.
+    5) Retorna dict ready‐to‐dump para .ipynb.
     """
     # 1) partida
     parts = re.split(r'(?m)^---\s*$', raw, maxsplit=1)
@@ -52,24 +53,37 @@ def converter_conteudo_para_notebook(raw: str) -> dict:
         kind, content = m.group(1), m.group(2)
         lines = content.splitlines()
         if kind == 'markdown':
-            # 3) preserva <br> mas garante espaço antes/depois se há texto adjacente
+            # preserva <br> mas garante espaço antes/depois se há texto adjacente
             fixed = [ re.sub(r'(?<=\S)<br>(?=\S)', ' <br> ', line)
                       for line in lines ]
-            source = [ l + '\n' for l in fixed ]
+            source = [l + '\n' for l in fixed]
             cell = {"cell_type":"markdown","metadata":{},"source":source}
+            cells.append(cell)
         else:  # python
-            source = [ l + '\n' for l in lines ]
-            cell = {"cell_type":"code",
-                    "execution_count":None,
-                    "metadata":{},
-                    "outputs":[],
-                    "source":source}
-        cells.append(cell)
+            # bloco de código principal
+            source_code = [l + '\n' for l in lines]
+            code_cell = {
+                "cell_type":"code",
+                "execution_count":None,
+                "metadata":{},
+                "outputs":[],
+                "source":source_code
+            }
+            cells.append(code_cell)
+            # célula de prática após o código
+            practice_cell = {
+                "cell_type":"code",
+                "execution_count":None,
+                "metadata":{},
+                "outputs":[],
+                "source":["# Pratique seu código aqui!\n"]
+            }
+            cells.append(practice_cell)
 
     if not cells:
         raise ValueError("Parser não extraiu nenhum bloco de código/markdown.")
     
-    # 4) monta notebook dict
+    # 3) monta notebook dict
     return {
       "nbformat": 4,
       "nbformat_minor": 4,
@@ -98,7 +112,7 @@ def enviar_para_drive(file_id: str, nb_dict: dict):
         else:
             flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS, SCOPES)
             creds = flow.run_local_server(port=0)
-        with open(TOKEN_FILE, 'w') as f:
+        with open(TOKEN_FILE, 'w', encoding='utf-8') as f:
             f.write(creds.to_json())
 
     service = build('drive', 'v3', credentials=creds)
@@ -110,7 +124,6 @@ def enviar_para_drive(file_id: str, nb_dict: dict):
 
 
 def executar_interface():
-    """Tkinter/ttk GUI para obter link + conteúdo do usuário."""
     resultado = {'link':None,'conteudo':None}
 
     def on_ok():
@@ -143,7 +156,6 @@ def main():
         messagebox.showinfo("Sucesso", "Notebook atualizado com sucesso!")
     except Exception as e:
         messagebox.showerror("Erro", str(e))
-
 
 if __name__ == "__main__":
     main()
