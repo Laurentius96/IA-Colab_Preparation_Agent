@@ -99,39 +99,25 @@ def authenticate():
 
 
 def parse_synapse_output(text):
-    """Analisa texto 'Modo Aula', aceita cabeçalhos diretos, tabelas, separadores e preserva <br>."""
-    # Remove seções opcionais
+    """Transforma o texto Modo Aula em lista de células, preservando <br>."""
     if "🌊 Mergulhos Adicionais Opcionais" in text:
         text = text.split("🌊 Mergulhos Adicionais Opcionais")[0]
 
-    lines = text.splitlines(True)
+    pattern = re.compile(
+        r"(```markdown\n(.*?)\n```)|(▶️.*?```python\n(.*?)\n```)|(📖.*?```markdown\n(.*?)\n```)" ,
+        re.DOTALL
+    )
     cells = []
-    buffer = ''
-
-    def flush_buffer():
-        nonlocal buffer
-        if buffer:
-            cells.append({'type': 'markdown', 'content': buffer.rstrip()})
-            buffer = ''
-
-    for raw in lines:
-        # Espaça <br> colado ao texto
-        line = re.sub(r'(?<=\S)<br>(?=\S)', ' <br> ', raw)
-
-        # Se a linha for só <br>, faz célula independente
-        if line.strip() == '<br>':
-            flush_buffer()
-            cells.append({'type': 'markdown', 'content': '<br>\n'})
-            continue
-
-        # Sempre que encontrar um cabeçalho (##, ###), tabela (|...) ou separador (---), inicia nova célula
-        if re.match(r'^(##+\s|---|\|)', line):
-            flush_buffer()
-
-        buffer += line
-
-    # Flush final
-    flush_buffer()
+    for match in pattern.finditer(text):
+        md, code, read = match.group(2), match.group(4), match.group(6)
+        if md:
+            cells.append({'type':'markdown', 'content':md.rstrip()})
+        elif code:
+            cells.append({'type':'code', 'content':code.rstrip()})
+            cells.append({'type':'code', 'content':'# Pratique seu código aqui!'})
+        elif read:
+            cells.append({'type':'markdown', 'content':read.rstrip()})
+    logging.info(f"Parser extraiu {len(cells)} células.")
     return cells
 
 

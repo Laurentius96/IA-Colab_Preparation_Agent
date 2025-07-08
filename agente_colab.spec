@@ -1,19 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_all
-
-datas = [('client_secrets.json', '.')]
-binaries = []
-hiddenimports = []
-tmp_ret = collect_all('tkinter')
-datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 
 
 a = Analysis(
     ['agente_colab.py'],
     pathex=[],
-    binaries=binaries,
-    datas=datas,
-    hiddenimports=hiddenimports,
+    binaries=[],
+    datas=[('client_secrets.json', '.'), ('Icone.ico', '.')],
+    hiddenimports=['google.auth', 'google.oauth2', 'googleapiclient'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
